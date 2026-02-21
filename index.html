@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+#toolbar {
+  padding: 10px;
+  background: #f0f0f0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+#canvas {
+  width: 100vw;
+  height: 90vh;
+  position: relative;
+  background: #ffffff;
+  overflow: hidden;
+  border-top: 1px solid #ccc;
+}
+
+.draggable {
+  position: absolute;
+  cursor: move;
+  min-width: 50px;
+  min-height: 30px;
+  padding: 5px;
+}
+
+.text-box {
+  border: 1px dashed #aaa;
+}
+
+img {
+  max-width: 150px;
+  resize: both;
+  overflow: auto;
+}
+</style>
+</head>
+<body>
+
+<div id="toolbar">
+  <button onclick="addText()">Add Text</button>
+  <input type="color" id="colorPicker" onchange="changeColor()">
+  <input type="file" accept="image/*" onchange="addImage(event)">
+</div>
+
+<div id="canvas"></div>
+
+<script>
+let selectedElement = null;
+
+function makeDraggable(el) {
+  let offsetX, offsetY;
+
+  el.onmousedown = function(e) {
+    selectedElement = el;
+    offsetX = e.clientX - el.offsetLeft;
+    offsetY = e.clientY - el.offsetTop;
+
+    document.onmousemove = function(e) {
+      el.style.left = (e.clientX - offsetX) + "px";
+      el.style.top = (e.clientY - offsetY) + "px";
+    };
+
+    document.onmouseup = function() {
+      document.onmousemove = null;
+    };
+  };
+}
+
+function addText() {
+  const text = document.createElement("div");
+  text.contentEditable = true;
+  text.innerText = "Edit me";
+  text.className = "draggable text-box";
+  text.style.left = "50px";
+  text.style.top = "50px";
+  document.getElementById("canvas").appendChild(text);
+  makeDraggable(text);
+}
+
+function changeColor() {
+  if (selectedElement) {
+    selectedElement.style.color = document.getElementById("colorPicker").value;
+  }
+}
+
+function addImage(event) {
+  const file = event.target.files[0];
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = document.createElement("img");
+    img.src = e.target.result;
+    img.className = "draggable";
+    img.style.left = "100px";
+    img.style.top = "100px";
+    img.style.position = "absolute";
+    document.getElementById("canvas").appendChild(img);
+    makeDraggable(img);
+  };
+  reader.readAsDataURL(file);
+}
+</script>
+
+</body>
+</html>inde
